@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S.K Gym | תוכנית חדר כושר</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a1414">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="S.K Gym">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <style>
+    :root {
+      --bg: #0a1414;
+      --card: #11262a;
+      --card-inner: #183338;
+      --border-color: #24474e;
+      --accent: #2dd4bf;
+      --accent-dark: #0f766e;
+      --accent-glow: rgba(45,212,191,0.18);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; padding-bottom: 95px; max-width: 760px; margin-inline: auto; }
+    .brand-header { background: linear-gradient(135deg, var(--card), var(--bg)); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+    .brand-title { display: flex; align-items: center; gap: 8px; }
+    .brand-tag { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #0b1020; font-weight: 900; font-size: 0.95rem; padding: 4px 8px; border-radius: 6px; letter-spacing: 1px; }
+    .brand-name { font-size: 1.02rem; font-weight: bold; }
+    .top-tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--card); padding: 6px; border-radius: 12px; border: 1px solid var(--border-color); position: sticky; top: 6px; z-index: 50; }
+    .top-tab-btn { flex: 1; background: none; border: none; color: var(--muted); font-size: 0.9rem; font-weight: bold; padding: 11px 4px; border-radius: 8px; cursor: pointer; }
+    .top-tab-btn.active { background: var(--accent); color: #0b1020; box-shadow: 0 2px 8px var(--accent-glow); }
+    h2 { font-size: 1.12rem; margin: 4px 0 10px; }
+    h3 { color: var(--accent); font-size: 1rem; margin: 12px 0 6px; }
+    .card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 1px solid var(--border-color); }
+    .inner { background: var(--card-inner); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 0.88rem; line-height: 1.65; }
+    .muted { color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+    .badge { display: inline-block; background: var(--accent-glow); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; border: 1px solid var(--accent); }
+    .badge.cardio { background: rgba(34,197,94,0.18); color: #4ade80; border-color: rgba(34,197,94,0.4); }
+    .badge.optional { background: rgba(148,163,184,0.15); color: #cbd5e1; border-color: rgba(148,163,184,0.4); }
+    .tag { display: inline-block; background: rgba(245,158,11,0.18); color: var(--warning); padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; margin-left: 6px; }
+    .tag.evening { background: var(--accent-glow); color: var(--accent); }
+    .weeks-tracker { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 14px; border: 1px solid var(--border-color); }
+    .weeks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+    .week-btn { background: var(--card-inner); border: 1px solid var(--border-color); color: var(--muted); border-radius: 8px; padding: 8px 4px; text-align: center; font-size: 0.85rem; cursor: pointer; user-select: none; }
+    .week-btn.checked { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); font-weight: bold; }
+    .timer-bar { background: var(--card-inner); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; border: 1px solid var(--border-color); gap: 6px; flex-wrap: wrap; }
+    .btn { background: var(--accent-dark); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+    .btn.ghost { background: none; border: 1px solid var(--danger); color: var(--danger); font-weight: normal; padding: 4px 8px; font-size: 0.75rem; }
+    .day-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .day-progress { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    .day-body.collapsed { display: none; }
+    .todo-item { display: flex; align-items: flex-start; margin: 14px 0; font-size: 0.95rem; line-height: 1.4; }
+    .todo-item.evening { border-top: 1px dashed var(--border-color); padding-top: 12px; }
+    .todo-item input[type=checkbox] { margin-left: 10px; margin-top: 3px; width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; }
+    .todo-item.done .ex-name { text-decoration: line-through; opacity: 0.6; }
+    .ex-body { flex: 1; min-width: 0; }
+    .muscle { color: var(--accent); font-weight: 600; }
+    .note { display: block; color: var(--muted); font-size: 0.82rem; margin-top: 3px; }
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+    .demo-btn { background: var(--accent-dark); color: #fff; border: none; font-size: 0.75rem; font-weight: bold; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+    .log { display: flex; gap: 4px; align-items: center; font-size: 0.75rem; color: var(--muted); }
+    .log input { width: 54px; background: var(--bg); border: 1px solid var(--border-color); color: var(--text); border-radius: 6px; padding: 5px; font-size: 0.8rem; text-align: center; }
+    .demo-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; justify-content: center; align-items: center; padding: 14px; }
+    .demo-modal.active { display: flex; }
+    .demo-content { background: var(--card); border-radius: 16px; width: 100%; max-width: 550px; overflow: hidden; border: 1px solid var(--border-color); }
+    .demo-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card-inner); border-bottom: 1px solid var(--border-color); }
+    .demo-header h3 { margin: 0; color: #fff; }
+    .close-btn { background: none; border: none; color: var(--danger); font-size: 1.6rem; font-weight: bold; cursor: pointer; }
+    .demo-body { padding: 16px; }
+    .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+    .video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .yt-btn { display: block; background: #dc2626; color: #fff; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; margin-bottom: 12px; }
+    .tips-box { background: var(--bg); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); font-size: 0.9rem; line-height: 1.5; }
+    .tips-box strong { color: var(--accent); display: block; margin-bottom: 4px; }
+    .tab-view { display: none; }
+    .tab-view.active { display: block; }
+    .macro-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; background: var(--card-inner); padding: 12px 6px; border-radius: 10px; margin-bottom: 14px; font-size: 0.82rem; border: 1px solid var(--border-color); }
+    .macro-bar strong { display: block; color: var(--accent); font-size: 1rem; margin-bottom: 2px; }
+    .stage-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .stage-table td, .stage-table th { border-bottom: 1px solid var(--border-color); padding: 7px 4px; text-align: right; }
+    .stage-table th { color: var(--accent); font-weight: 600; }
+    .opt { display: flex; gap: 10px; align-items: flex-start; background: var(--card-inner); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; margin: 8px 0; cursor: pointer; }
+    .opt.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+    .opt input { margin-top: 3px; accent-color: var(--accent); width: 18px; height: 18px; flex-shrink: 0; }
+    .opt-name { font-weight: bold; font-size: 0.93rem; }
+    .opt-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; margin: 3px 0; }
+    .opt-macros { font-size: 0.78rem; color: var(--accent); }
+    .total-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 2px solid var(--accent); padding: 10px 14px; display: none; z-index: 60; }
+    .total-bar.show { display: block; }
+    .total-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; font-size: 0.78rem; max-width: 760px; margin: 0 auto; gap: 4px; }
+    .total-grid strong { display: block; font-size: 0.98rem; }
+    .ok { color: #4ade80; } .low { color: var(--warning); } .high { color: var(--danger); }
+    ul.clean { margin: 6px 0; padding-right: 18px; }
+    ul.clean li { margin: 5px 0; }
+      .time-chip { display: inline-block; font-size: 0.78rem; color: var(--muted); margin-right: 8px; }
+    .ex { background: var(--card-inner); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin: 10px 0; }
+    .ex.in-ss { border-right: 4px solid var(--accent); }
+    .ex.done { opacity: 0.55; }
+    .ex.done .ex-name { text-decoration: line-through; }
+    .ex-top { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+    .ex-top input { width: 22px; height: 22px; accent-color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .ex-name { font-weight: bold; font-size: 1rem; line-height: 1.35; }
+    .ex-en { color: var(--muted); font-size: 0.78rem; direction: ltr; text-align: right; }
+    .ex-sets { color: var(--accent); font-weight: bold; font-size: 0.95rem; margin-top: 3px; }
+    .ex-info { margin-top: 8px; padding-right: 32px; font-size: 0.88rem; line-height: 1.55; }
+    .ex-info strong { color: #e2e8f0; }
+    .how-title { margin-top: 6px; font-weight: bold; color: var(--accent); }
+    ol.how { margin: 4px 0 6px; padding-right: 20px; }
+    ol.how li { margin: 3px 0; }
+    .video-btn { display: inline-block; margin-top: 6px; background: #dc2626; color: #fff; text-decoration: none; font-weight: bold; font-size: 0.85rem; padding: 8px 14px; border-radius: 8px; }
+    .ss-start { margin: 14px 0 -2px; font-size: 0.82rem; font-weight: bold; color: var(--accent); }
+    .ss-end { font-size: 0.78rem; color: var(--muted); margin: -2px 0 12px; }
+    .day-label { font-size: 1.6rem; font-weight: 900; color: var(--accent); line-height: 1.2; }
+    .day-label.cardio { color: #4ade80; }
+    .day-label.optional { color: #cbd5e1; }
+    .day-sub { margin: 2px 0 4px; display: flex; gap: 8px; align-items: center; }
+    .day-sub .time-chip { margin: 0; }
+    .opt-chip { background: rgba(148,163,184,0.2); color: #e2e8f0; border: 1px dashed #94a3b8; border-radius: 6px; padding: 2px 8px; font-size: 0.8rem; font-weight: bold; }
+    .day-card { border-top: 4px solid var(--accent); scroll-margin-top: 70px; }
+    .day-card.cardio { border-top-color: #4ade80; }
+    .day-card.optional { border-top: 4px dashed #94a3b8; }
+    .day-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .nav-chip { background: var(--card); color: var(--text); border: 1px solid var(--accent); border-radius: 20px; padding: 7px 12px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+    .nav-chip.cardio { border-color: #4ade80; }
+    .nav-chip.optional { border-style: dashed; border-color: #94a3b8; color: #cbd5e1; }
+    .ss-summary { background: var(--accent-glow); border: 1px solid var(--accent); color: var(--text); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; font-weight: bold; margin: 6px 0 10px; }
+    .ss-box { border: 3px solid var(--accent); border-radius: 14px; padding: 10px 8px 6px; margin: 16px 0; background: var(--accent-glow); }
+    .ss-head { margin-bottom: 4px; }
+    .ss-big { display: inline-block; background: var(--accent); color: #0b1020; font-weight: 900; font-size: 1.1rem; padding: 4px 12px; border-radius: 8px; }
+    .ss-rule { font-size: 0.85rem; font-weight: bold; margin-top: 6px; line-height: 1.4; }
+    .ss-tag { display: inline-block; background: var(--accent); color: #0b1020; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 6px; margin-bottom: 4px; }
+    .ss-foot { text-align: center; font-weight: bold; font-size: 0.85rem; color: var(--accent); padding: 6px 4px 2px; }
+    .ex.in-ss { border-right: 1px solid var(--border-color); }
+    .sticky-day { position: sticky; top: 88px; z-index: 40; background: var(--accent); color: #0b1020; font-weight: 900; font-size: 0.95rem; padding: 6px 12px; border-radius: 8px; margin: 6px 0 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.5); }
+    .sticky-day.cardio { background: #4ade80; }
+    .sticky-day.optional { background: #cbd5e1; }
+    .focus-mini { padding: 8px 12px; }
+    .focus-mini summary { cursor: pointer; color: var(--muted); font-size: 0.85rem; font-weight: bold; list-style: none; }
+    .focus-mini summary::-webkit-details-marker { display: none; }
+    .focus-mini details[open] summary { color: var(--accent); margin-bottom: 6px; }
+    .phase-switch { display: flex; gap: 6px; margin-bottom: 10px; }
+    .phase-btn { flex: 1; background: var(--card); color: var(--muted); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 4px; font-weight: bold; font-size: 0.88rem; cursor: pointer; }
+    .phase-btn.active { background: var(--accent); color: #0b1020; border-color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="brand-header">
+    <div class="brand-title">
+      <span class="brand-tag">S.K</span>
+      <span class="brand-name" id="brandName"></span>
+    </div>
+    <button class="btn ghost" onclick="resetWeek()">אפס שבוע</button>
+  </div>
+
+  <div class="top-tabs">
+    <button class="top-tab-btn active" data-tab="workout">🏋️ אימונים</button>
+    <button class="top-tab-btn" data-tab="nutrition">🥗 תפריט</button>
+    <button class="top-tab-btn" data-tab="guide">📈 התקדמות ודילואד</button>
+  </div>
+
+  <div id="view-workout" class="tab-view active">
+    <div class="weeks-tracker">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size:0.9rem;" id="trackerTitle"></strong>
+        <span id="weeksCount" style="color:var(--accent); font-size:0.85rem;"></span>
+      </div>
+      <div class="weeks-grid" id="weeksGrid"></div>
+    </div>
+    <div class="card" id="focusCard"></div>
+    <div class="timer-bar">
+      <span>⏱️ מנוחה: <strong id="timerDisplay">מוכן</strong></span>
+      <div style="display:flex; gap:6px;">
+        <button class="btn" onclick="startTimer(60)">60</button>
+        <button class="btn" onclick="startTimer(90)">90</button>
+        <button class="btn" onclick="startTimer(120)">120</button>
+      </div>
+    </div>
+    <div id="days"></div>
+  </div>
+
+  <div id="view-nutrition" class="tab-view">
+    <div class="macro-bar" id="macroBar"></div>
+    <div class="card" id="nutritionIntro"></div>
+    <div class="card">
+      <span class="badge">בונה תפריט יומי</span>
+      <h2>בחר ארוחה מכל קטגוריה</h2>
+      <p class="muted">סמן אפשרות אחת לבוקר, צהריים וערב, ונשנושים לפי הצורך. הסיכום היומי בתחתית המסך מושווה ליעד של השלב. הערכים משוערים ומבוססים על משקל חומרי גלם לפני בישול.</p>
+      <div id="mealSections"></div>
+    </div>
+  </div>
+
+  <div id="view-guide" class="tab-view">
+    <div id="guideContent"></div>
+  </div>
+
+  <div class="total-bar" id="totalBar"><div class="total-grid" id="totalGrid"></div></div>
+
+  <script>
+const ALL = {"A": {"storageKey": "sk_gym_blockA_state", "title": "S.K Gym | בלוק A - שבועות 1-8", "brand": "Gym · בלוק A (1–8)", "trackerTitle": "מעקב בלוק A (כוח + נפח):", "weeks": [1, 2, 3, 4, 5, 6, 7, 8], "short": "S.K Gym", "focus": {"badge": "מה בבלוק A", "title": "4 אימוני כוח בחדר כושר, הליכה בבית", "points": ["<strong>עליון/תחתון פעמיים בשבוע.</strong> כל שריר מתאמן פעמיים, כל אימון 55–60 דקות כולל חימום.", "בכל יום יש <strong>תרגיל ראשון כבד</strong> (6–10 חזרות, 2 דקות מנוחה), ואחריו נפח ובידוד.", "<strong>סופר-סטים בסוף האימון</strong> לתרגילים הקטנים, כדי לחסוך זמן.", "חדר כושר מלא: מוטות ומתקן סקוואט, סמית', מכונות רגליים, כבלים, דאמבלים. הליכה: בבית על ההליכון."]}, "days": [{"label": "יום ראשון", "nav": "ראשון", "time": "~55–60 דק'", "title": "עליון A: חזה + גב", "items": [{"id": "a1", "name": "לחיצת חזה במוט", "en": "Barbell Bench Press", "sets": "3 סטים × 6–8", "target": "חזה + יד אחורית + כתף קדמית", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה. בסטנד עם תפסי ביטחון, או עם מישהו ששומר", "how": ["שוכבים על הספה, העיניים מתחת למוט. מצמידים שכמות לאחור ולמטה, כפות רגליים יציבות על הרצפה.", "אחיזה קצת יותר רחבה מהכתפיים. מורידים את המוט מהסטנד אל מעל הכתפיים.", "מורידים בשליטה (2–3 שניות) לחזה התחתון. המרפקים בזווית של כ-45° מהגוף, לא פתוחים לצדדים.", "נוגעים קלות בחזה ודוחפים חזק למעלה."], "video": "rT7DgCr-3pg", "tag": "כבד", "superset": null}, {"id": "a2", "name": "פולי עליון", "en": "Lat Pulldown", "sets": "3 סטים × 8–12", "target": "גב רחב", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["יושבים, הירכיים מתחת לכריות. אחיזה רחבה, כפות ידיים קדימה.", "מושכים את המוט לחזה העליון, מובילים עם המרפקים למטה ולאחור.", "חוזרים לאט עד ידיים כמעט ישרות ומתיחה בגב."], "video": "CAwf7n6Luuc", "tag": null, "superset": null}, {"id": "a3", "name": "לחיצה בשיפוע עם דאמבלים", "en": "Incline DB Press", "sets": "3 סטים × 8–12", "target": "חזה עליון", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["ספה ב-30°. דאמבלים מעל החזה.", "מורידים לאט עד גובה החזה, ודוחפים למעלה."], "video": "awEEyL5zGvU", "tag": null, "superset": null}, {"id": "a4", "name": "חתירה בכבל בישיבה", "en": "Seated Cable Row", "sets": "3 סטים × 10–12", "target": "אמצע הגב (עובי)", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["יושבים, רגליים על הפלטה, ברכיים קצת כפופות. ידית צרה.", "גב ישר. מושכים את הידית לבטן ומצמידים את השכמות.", "מחזירים לאט, נותנים לכתפיים להימתח קדימה בלי לעגל את הגב."], "video": "cAeBmvpt31A", "tag": null, "superset": null}, {"id": "a5", "name": "הרחקה לצד בכבל", "en": "Cable Lateral Raise", "sets": "3 סטים × 12–15", "target": "כתף אמצעית (רוחב)", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר (יד אחת בכל פעם)", "how": ["כבל בגובה הנמוך ביותר עם ידית אחת. עומדים בצד, היד הרחוקה מהמכונה אוחזת בידית.", "מרימים את היד לצד, מרפק קצת כפוף, עד גובה הכתף.", "מורידים לאט. מסיימים יד אחת ומחליפים."], "video": "qghfvzcoS2I", "tag": null, "superset": "A"}, {"id": "a6", "name": "כפיפות פטיש", "en": "Hammer Curl", "sets": "3 סטים × 10–12", "target": "יד קדמית + אמה", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["דאמבל בכל יד, כפות ידיים זו מול זו. המרפקים צמודים לגוף ולא זזים.", "מרימים עד הכתף ומורידים לאט, בלי לנדנד את הגוף."], "video": "CFBZ4jN1CMI", "tag": null, "superset": "A"}]}, {"label": "יום שני", "nav": "שני", "time": "~55–60 דק'", "title": "תחתון A: ירכיים קדמיות", "items": [{"id": "b1", "name": "האק סקוואט", "en": "Hack Squat", "sets": "3 סטים × 6–10", "target": "ירכיים קדמיות + ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה. אם אין מכונה: סקוואט בסמית'", "how": ["גב צמוד למשענת, כתפיים מתחת לכריות, רגליים ברוחב הכתפיים באמצע הפלטה.", "משחררים את הנעילה ויורדים לאט עמוק ככל שנוח (לפחות עד ירכיים מקבילות).", "דוחפים מכל כף הרגל ועולים, בלי לנעול את הברכיים למעלה."], "video": "-lAnEGH2blE", "tag": "כבד", "superset": null}, {"id": "b2", "name": "דדליפט רומני במוט", "en": "Barbell Romanian Deadlift", "sets": "3 סטים × 8–10", "target": "ירך אחורית + ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה. אפשר רצועות הרמה", "how": ["עומדים, רגליים ברוחב האגן, מחזיקים את המוט מול הירכיים.", "ברכיים קצת כפופות ונשארות ככה. דוחפים את הישבן אחורה, והמוט מחליק צמוד לרגליים.", "יורדים 3 שניות עד מתיחה חזקה בירך האחורית (בערך מתחת לברכיים). הגב ישר כל הזמן.", "עולים על ידי דחיפת האגן קדימה."], "video": "xgusDooVfKU", "tag": "כבד", "superset": null}, {"id": "b3", "name": "כפיפת ברכיים בישיבה במכונה", "en": "Seated Leg Curl", "sets": "3 סטים × 10–12", "target": "ירך אחורית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["מכוונים כך שהברך מול הציר, הכרית מעל העקב, וכרית הירכיים צמודה.", "מכופפים את הברכיים עד הסוף ועוצרים שנייה.", "חוזרים לאט, 3 שניות."], "video": "Z5pRnXaCjpM", "tag": null, "superset": null}, {"id": "b4", "name": "פשיטת ברכיים במכונה", "en": "Leg Extension", "sets": "3 סטים × 12–15", "target": "ירך קדמית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["מכוונים את המושב כך שהברך מול הציר של המכונה, והכרית על הקרסול.", "מיישרים את הרגליים עד הסוף ועוצרים שנייה למעלה.", "מורידים לאט, 3 שניות."], "video": "MXvSzXEBOTI", "tag": null, "superset": "A"}, {"id": "b5", "name": "כפיפות בטן בכבל על הברכיים", "en": "Kneeling Cable Crunch", "sets": "3 סטים × 12–15", "target": "בטן", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["כבל עליון עם חבל. כורעים על הברכיים מול המכונה, החבל ליד הראש.", "מכופפים את הגב ומקרבים את המרפקים לברכיים, הירכיים לא זזות.", "חוזרים לאט למעלה."], "video": "kc0PRn372lo", "tag": null, "superset": "A"}, {"id": "b6", "name": "עליות תאומים בעמידה במכונה", "en": "Standing Calf Raise", "sets": "3 סטים × 10–15", "target": "שוקיים", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["הכריות על הכתפיים, קצות כפות הרגליים על המדרגה, העקבים באוויר.", "מורידים את העקבים למתיחה מלאה ועוצרים 2 שניות.", "עולים לקצות האצבעות הכי גבוה שאפשר."], "video": "ucy86plaufg", "tag": null, "superset": null}]}, {"label": "יום שלישי (הליכה בבית)", "nav": "שלישי", "kind": "cardio", "time": "30–45 דק'", "title": "הליכה בהליכון", "items": [{"id": "c1", "name": "הליכה בהליכון בבית", "sets": "30–45 דק'", "weight": "קצב שיחה, 5.0–5.6 קמ\"ש, שיפוע 2%–6%. בערב או בבוקר של יום מנוחה.", "cardio": true}]}, {"label": "יום רביעי", "nav": "רביעי", "time": "~55–60 דק'", "title": "עליון B: כתפיים + גב + ידיים", "items": [{"id": "d1", "name": "עליות מתח עם משקל", "en": "Weighted Pull-Up", "sets": "3 סטים × 6–10", "target": "גב רחב", "weight": "חגורת משקל או דאמבל בין הרגליים. משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["אחיזה קצת רחבה מהכתפיים, כפות ידיים קדימה. מתחילים מתלייה עם ידיים ישרות.", "מושכים עד שהסנטר עובר את המוט, מובילים עם המרפקים כלפי מטה.", "יורדים לאט, 2–3 שניות, עד ידיים ישרות.", "כשהקמיצה מגיבה: אפשר רצועות הרמה (סטרפס)."], "video": "QZue7F_Zk3A", "tag": "כבד", "superset": null}, {"id": "d2", "name": "לחיצת כתפיים בישיבה עם דאמבלים", "en": "Seated DB Shoulder Press", "sets": "3 סטים × 8–10", "target": "כתפיים", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["משענת כמעט ישרה. דאמבלים בגובה הכתפיים, כפות ידיים קדימה.", "דוחפים ישר למעלה עד ידיים כמעט ישרות, ויורדים לאט עד גובה האוזניים."], "video": "WKEl69bIGus", "tag": null, "superset": null}, {"id": "d3", "name": "חתירה עם תמיכה בחזה (T-Bar / מכונה)", "en": "Chest-Supported Row", "sets": "3 סטים × 10–12", "target": "גב (עובי)", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["החזה צמוד לכרית, אוחזים בידיות.", "מושכים את המרפקים לאחור, מצמידים שכמות ועוצרים שנייה.", "מורידים לאט עד ידיים ישרות."], "video": "Mlr-Lx-10HQ", "tag": null, "superset": null}, {"id": "d4", "name": "מקבילים עם משקל", "en": "Weighted Dips", "sets": "3 סטים × 8–12", "target": "חזה תחתון + יד אחורית", "weight": "משקל גוף, ומעליו חגורת משקל", "how": ["עולים לידיים ישרות, גוף קצת נוטה קדימה.", "יורדים עד שהמרפקים ב-90°, ודוחפים חזרה."], "video": "SAqfMbjFaPo", "tag": null, "superset": null}, {"id": "d5", "name": "משיכת חבל לפנים", "en": "Face Pull", "sets": "3 סטים × 12–15", "target": "כתף אחורית + אמצע הגב", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["כבל בגובה הפנים עם חבל. אוחזים בקצוות, צעד אחורה.", "מושכים את החבל לכיוון המצח ופותחים את הידיים לצדדים, המרפקים גבוהים.", "עוצרים שנייה ומחזירים לאט."], "video": "4CXhdbWOdzQ", "tag": null, "superset": "A"}, {"id": "d6", "name": "פשיטת מרפקים מעל הראש בכבל", "en": "Overhead Cable Triceps Extension", "sets": "3 סטים × 12–15", "target": "יד אחורית (ראש ארוך)", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["כבל נמוך עם חבל. מסתובבים עם הגב למכונה, החבל מאחורי הראש, צעד קדימה.", "המרפקים מכוונים קדימה וקרובים לראש.", "מיישרים את הידיים קדימה-למעלה עד הסוף, וחוזרים לאט למתיחה."], "video": "mRozZKkGIfg", "tag": null, "superset": "A"}, {"id": "d7", "name": "הרחקה לצד בכבל", "en": "Cable Lateral Raise", "sets": "2 סטים × 12–15", "target": "כתף אמצעית (רוחב)", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר (יד אחת בכל פעם)", "how": ["כבל בגובה הנמוך ביותר עם ידית אחת. עומדים בצד, היד הרחוקה מהמכונה אוחזת בידית.", "מרימים את היד לצד, מרפק קצת כפוף, עד גובה הכתף.", "מורידים לאט. מסיימים יד אחת ומחליפים."], "video": "qghfvzcoS2I", "tag": null, "superset": "B"}, {"id": "d8", "name": "כפיפת מרפקים בכבל", "en": "Cable Curl", "sets": "2 סטים × 10–12", "target": "יד קדמית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["כבל נמוך עם מוט קצר. המרפקים צמודים לגוף ולא זזים.", "מכופפים עד הכתפיים, ומורידים לאט עד ידיים ישרות."], "video": "C68nhss07U8", "tag": null, "superset": "B"}]}, {"label": "יום חמישי", "nav": "חמישי", "time": "~55–60 דק'", "title": "תחתון B: ירך אחורית + ישבן", "items": [{"id": "e1", "name": "סקוואט בולגרי עם דאמבלים", "en": "DB Bulgarian Split Squat", "sets": "3 סטים × 8–10 לכל רגל", "target": "ירכיים קדמיות + ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה (דאמבל בכל יד)", "how": ["עומדים שני צעדים לפני ספה, קצה כף הרגל האחורית עליה.", "יורדים ישר למטה עד שהברך האחורית כמעט נוגעת ברצפה.", "דוחפים מהעקב הקדמי ועולים. מסיימים רגל ומחליפים."], "video": "iwV9rTHKrOg", "tag": "כבד", "superset": null}, {"id": "e2", "name": "היפ-טראסט במוט", "en": "Barbell Hip Thrust", "sets": "3 סטים × 8–12", "target": "ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה (ריפוד על המוט)", "how": ["גב עליון על ספה, מוט עם ריפוד על המותניים, כפות רגליים ברוחב האגן.", "דוחפים מהעקבים עד שהגוף ישר מהכתפיים לברכיים. סנטר מכונס.", "לוחצים את הישבן 2 שניות למעלה ויורדים לאט."], "video": "yTnWiBECvLk", "tag": null, "superset": null}, {"id": "e3", "name": "לחיצת רגליים", "en": "Leg Press", "sets": "3 סטים × 10–15", "target": "ירכיים + ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["גב וישבן צמודים למושב, רגליים ברוחב הכתפיים באמצע הפלטה.", "יורדים לאט עד ברכיים ב-90° או מעט יותר, בלי שהישבן יתרומם מהמושב.", "דוחפים חזרה בלי לנעול את הברכיים."], "video": "q4W4_VJbKW0", "tag": null, "superset": null}, {"id": "e4", "name": "כפיפת ברכיים בשכיבה במכונה", "en": "Lying Leg Curl", "sets": "3 סטים × 10–12", "target": "ירך אחורית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["שוכבים על הבטן, הכרית מעל העקבים, הברכיים בקצה הספה.", "מכופפים עד הסוף, האגן צמוד לספה. מורידים לאט, 3 שניות."], "video": "kLJlqfn_bDM", "tag": null, "superset": null}, {"id": "e5", "name": "עליות תאומים בישיבה", "en": "Seated Calf Raise", "sets": "3 סטים × 12–15", "target": "שוקיים", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["יושבים, הכרית על הירכיים מעל הברכיים, קצות כפות הרגליים על המדרגה.", "מורידים עקבים למתיחה ועוצרים 2 שניות, ועולים הכי גבוה שאפשר."], "video": "QCfQyNXEzS8", "tag": null, "superset": "A"}, {"id": "e6", "name": "הרמת רגליים בתלייה", "en": "Hanging Leg Raise", "sets": "3 סטים × 10–15", "target": "בטן תחתונה", "weight": "משקל גוף (רצועות AB אם יש)", "how": ["תלויים על מוט או ברצועות, הגוף רגוע.", "מרימים רגליים (או ברכיים, אם קשה) עד גובה המותניים ומגלגלים את האגן למעלה.", "מורידים לאט בלי נדנוד."], "video": "oei1GdP9aoY", "tag": null, "superset": "A"}]}, {"label": "שישי או שבת (הליכה בבית)", "nav": "סופ\"ש", "kind": "cardio", "time": "30–45 דק'", "title": "הליכה בהליכון", "items": [{"id": "f1", "name": "הליכה בהליכון בבית", "sets": "30–45 דק'", "weight": "קצב שיחה, 5.0–5.6 קמ\"ש, שיפוע 2%–6%. בערב או בבוקר של יום מנוחה.", "cardio": true}]}], "nutrition": {"target": {"kcal": "1,600→1,850", "p": "150–165 גר'", "c": "140–180 גר'", "f": "50–60 גר'"}, "range": {"kcal": [1600, 1850], "p": [150, 170], "c": [130, 185], "f": [45, 65]}, "badge": "בלוק A | חיטוב מתון", "title": "מעלים קלוריות בהדרגה בלי לעצור את הירידה בשומן", "intro": "ב-3 החודשים האחרונים ירדת כ-2 ק\"ג, <strong>והיקף המותניים ירד</strong>. זה סימן טוב: כנראה ירד שומן ובמקביל נבנה שריר, ולכן המשקל זז פחות ממה שהמספרים צפו. אחרי זמן ארוך על מעט קלוריות, תוספת הדרגתית של פחמימה סביב האימונים תעזור לאימונים ולבניית השריר. <strong>מעלים בהדרגה, ובודקים כל שבוע את ממוצע המשקל ואת המותניים.</strong>", "stages": [["1–2", "~1,600", "מוסיפים <strong>שייק + בננה</strong> אחרי אימון. שוקלים כל בוקר."], ["3–4", "~1,700", "אם הממוצע השבועי יציב או יורד, מוסיפים יוגורט חלבון."], ["5–8", "~1,800–1,850", "מעבירים את הבוקר לגרסה עם סקייר ופירות יער, ומוסיפים פחמימה בצהרי ימי אימון."]], "rules": ["<strong>חלבון 150–165 גר' כל יום</strong> (כ-2 גר' לק\"ג). זה הדבר הכי חשוב לשימור ובניית שריר בגירעון.", "<strong>שקילה כל בוקר</strong> אחרי שירותים, לפני אוכל. מסתכלים רק על הממוצע השבועי.", "יעד ירידה: <strong>0.25–0.5 ק\"ג בשבוע</strong>. ירידה של יותר מ-0.7 בשבוע: מוסיפים 150 קק\"ל. אין ירידה שבועיים ברצף: מורידים 100 קק\"ל, או בודקים קודם שהספירה מדויקת.", "פחמימות <strong>סביב האימון</strong> (צהריים או אחרי אימון), ופחות בערב של ימי מנוחה.", "שוקלים שמנים, טחינה וחמאת בוטנים על משקל, לפחות שבוע אחד. כף \"עגולה\" יכולה להיות 150 קק\"ל במקום 90.", "מדידת היקף מותניים פעם בשבועיים בגובה הטבור מראה התקדמות גם כשהמשקל עומד.", "שינה של 7+ שעות ושתייה של 2.5–3 ליטר ביום."], "meals": [{"id": "b", "title": "🌅 ארוחת בוקר", "options": [{"name": "עוגת פאדג' חלבון (הקבועה שלך)", "tag": "בסיס", "desc": "סקופ חלבון שוקולד-נוגט, ביצה L, כפית חמאת בוטנים, כפית ממרח תמרים, 2 כפות מים. אייר פרייר 165°C, 6–7 דק'.", "kcal": 295, "p": 33, "c": 14, "f": 10}, {"name": "פאדג' חלבון + סקייר ופירות יער", "tag": "מומלץ", "desc": "העוגה הקבועה + 150 גר' סקייר/יוגורט יווני 0% + 100 גר' פירות יער קפואים. אותה ארוחה, עוד 17 גר' חלבון.", "kcal": 435, "p": 50, "c": 30, "f": 10}, {"name": "שקשוקת חלבון", "desc": "2 ביצים + 2 חלבונים ברוטב עגבניות, 100 גר' קוטג' 5% בצד, פרוסת מחמצת (50 גר').", "kcal": 435, "p": 34, "c": 32, "f": 16}, {"name": "דייסת חלבון", "desc": "40 גר' שיבולת שועל במים, אחרי בישול מערבבים סקופ חלבון, 100 גר' פירות יער וכפית חמאת בוטנים.", "kcal": 345, "p": 30, "c": 41, "f": 7}]}, {"id": "l", "title": "☀️ ארוחת צהריים", "options": [{"name": "עוף + אורז + ירקות (הקבועה שלך)", "tag": "בסיס", "desc": "180–200 גר' חזה עוף (משקל נא), 3 כפות אורז מבושל, ירקות אפויים וסלט, כפית שמן זית.", "kcal": 440, "p": 50, "c": 30, "f": 10}, {"name": "דג לבן + אורז + טחינה", "desc": "250 גר' פילה אמנון/דניס (נא), 4 כפות אורז, ירקות אפויים, כף טחינה גולמית.", "kcal": 520, "p": 58, "c": 41, "f": 13}, {"name": "סלמון + בטטה", "tag": "1–2 בשבוע (אומגה 3)", "desc": "150 גר' פילה סלמון, בטטה קטנה (150 גר'), שעועית ירוקה/ברוקולי.", "kcal": 490, "p": 34, "c": 40, "f": 19}, {"name": "קציצות בקר 5% + קינואה", "desc": "180 גר' בקר טחון 5% (קציצות באייר פרייר), 4 כפות קינואה, סלט ירוק עם כפית שמן זית.", "kcal": 445, "p": 42, "c": 28, "f": 15}, {"name": "סלט עוף ועדשים", "desc": "200 גר' חזה עוף, 150 גר' עדשים ירוקות מבושלות, ירקות קצוצים, לימון וכפית שמן זית.", "kcal": 475, "p": 60, "c": 37, "f": 8}]}, {"id": "d", "title": "🌙 ארוחת ערב", "options": [{"name": "פיצת חלבון טונה/קוטג'", "tag": "בסיס", "desc": "בסיס טונה מסוננת (או קוטג' 5%) + ביצה, 25–30 גר' מוצרלה/פרמזן, 2 אנשובי, רוטב עגבניות בלי סוכר.", "kcal": 365, "p": 43, "c": 6, "f": 17}, {"name": "צלחת קוטג' וביצים עם מחמצת", "tag": "בסיס", "desc": "פרוסת מחמצת, חצי גביע עד גביע קוטג' 5%, 2 ביצים קשות, ירקות וכרוב כבוש.", "kcal": 420, "p": 38, "c": 30, "f": 17}, {"name": "סרדינים על מחמצת/צנימים", "tag": "בסיס", "desc": "1–2 פחיות סרדינים מסוננות, מעוכות עם חרדל ולימון, על פרוסת מחמצת או צנימים.", "kcal": 465, "p": 42, "c": 28, "f": 20}, {"name": "מוקפץ הודו וירקות", "desc": "150 גר' חזה הודו ברצועות, ירקות מוקפצים, 2 כפות אורז, כפית שמן ורוטב סויה דל נתרן.", "kcal": 340, "p": 38, "c": 26, "f": 7}, {"name": "חביתת ירקות + גבינה לבנה", "desc": "2 ביצים + 2 חלבונים עם ירקות, 100 גר' גבינה לבנה 5%, סלט ופרוסת מחמצת.", "kcal": 435, "p": 34, "c": 36, "f": 16}, {"name": "סנדוויצ'ים כפולים ליום לימודים ארוך", "tag": "שני עד 22:00", "desc": "4 פרוסות שיפון/מחמצת, טונה במים, 2 ביצים קשות, חרדל, כפית טחינה וחמוצים.", "kcal": 640, "p": 52, "c": 56, "f": 20}]}, {"id": "s", "title": "🍏 נשנושים ותוספות", "multi": true, "hint": "אפשר לבחור כמה. כאן מוסיפים את הקלוריות של השלב החדש בלי לשנות את הארוחות הקבועות.", "options": [{"name": "שייק חלבון + בננה אחרי אימון", "tag": "ימי אימון", "desc": "סקופ חלבון במים + בננה בינונית. הפחמימה עוזרת להתאוששות.", "kcal": 225, "p": 25, "c": 30, "f": 2}, {"name": "יוגורט חלבון (20 גר' חלבון)", "desc": "גביע יוגורט/מעדן חלבון. מתאים לנשנוש בין ארוחות או לפני שינה.", "kcal": 150, "p": 20, "c": 13, "f": 2}, {"name": "חצי גביע קוטג' 5% + ירקות", "desc": "125 גר' קוטג' עם מלפפון/גמבה.", "kcal": 145, "p": 15, "c": 6, "f": 6}, {"name": "3 פריכיות אורז + 100 גר' גבינה לבנה 5%", "desc": "", "kcal": 185, "p": 11, "c": 25, "f": 5}, {"name": "אדממה (150 גר' מקולף)", "desc": "מהמקפיא, אידוי של 4 דק' ומלח גס.", "kcal": 180, "p": 18, "c": 13, "f": 8}, {"name": "תפוח + 15 גר' שקדים", "desc": "", "kcal": 170, "p": 3, "c": 24, "f": 8}, {"name": "2 ביצים קשות", "desc": "", "kcal": 140, "p": 12, "c": 1, "f": 10}]}]}, "guide": [{"badge": "מילון קצר", "title": "מה כל מילה אומרת", "points": ["<strong>חזרה</strong> = פעם אחת שעושים את התנועה. <strong>סט</strong> = כמה חזרות ברצף ואז מנוחה.", "<strong>\"1–2 חזרות ברזרבה\"</strong> = מסיימים את הסט כשמרגישים שאפשר היה לעשות עוד 1–2 חזרות נקיות. ככה עובדים כבד בלי להישחק.", "<strong>סופר-סט</strong> = שני תרגילים ברצף בלי מנוחה ביניהם, ורק אחרי שניהם נחים. מסומן במסגרת צבעונית.", "<strong>מנוחה</strong>: 2 דקות בתרגילים שמסומנים \"כבד\", 90 שניות בשאר התרגילים הגדולים, 60 שניות בבידוד ובסופר-סטים.", "<strong>חימום (5–7 דק')</strong>: 3 דקות הליכה מהירה או אופניים, ואז בתרגיל הראשון 2–3 סטים קלים בהדרגה (למשל 50% × 8, 70% × 5, 85% × 2) לפני סטי העבודה."]}, {"badge": "מתי להעלות משקל", "title": "קודם חזרות, אחר כך משקל", "points": ["לכל תרגיל יש טווח (למשל 8–12). <strong>כשמגיעים לקצה העליון בכל הסטים</strong>, מעלים משקל בפעם הבאה.", "<strong>כמה להעלות:</strong> 2.5 ק\"ג בתרגילי מוט לפלג גוף עליון, 5 ק\"ג בתרגילי רגליים כבדים, דרגה אחת במכונות ובכבלים.", "אחרי שמעלים משקל, מתחילים שוב מהמספר הנמוך בטווח ובונים חזרה למעלה.", "<strong>רושמים</strong> את המשקל של התרגיל הראשון בכל יום (בפתק בטלפון). זה מה שמראה שאתה מתקדם.", "<strong>היד והעצב האולנרי:</strong> אם העקצוץ או חוסר התחושה בקמיצה או בזרת מתגברים, משתמשים ברצועות הרמה בתרגילי משיכה ודדליפט, מעדיפים חבל על מוט ישר בכבלים, ומעדכנים את הרופא או הפיזיותרפיסט."]}, {"badge": "אירובי", "title": "הליכה בבית, לא בחדר הכושר", "points": ["את השומן מורידה התזונה. ההליכה מגדילה את ההוצאה היומית בלי לפגוע בהתאוששות, ולכן היא מספיקה.", "<strong>2–3 הליכות בשבוע</strong> בהליכון בבית, 30–45 דקות, וגם <strong>8,000–10,000 צעדים ביום</strong>.", "בשבוע עמוס, ההליכות הן הדבר הראשון שאפשר לקצר. את אימוני הכוח לא מקצרים."]}, {"badge": "אחרי שבוע 8", "title": "שבוע דילואד (לפני שבוע 9)", "points": ["אותם תרגילים, <strong>2 סטים בלבד</strong> בכל תרגיל.", "משקל של כ-70%–80% מהרגיל, ונשארות 3–4 חזרות ברזרבה. בלי סטים עד שאי אפשר יותר.", "ההליכות כרגיל. שקילה, מדידת מותניים ותמונות."]}], "theme": {"BG": "#0a1414", "CARD": "#11262a", "CARDIN": "#183338", "BORDER": "#24474e", "ACCENT": "#2dd4bf", "ACCENT2": "#0f766e", "GLOW": "rgba(45,212,191,0.18)"}}, "B": {"storageKey": "sk_gym_blockB_state", "title": "S.K Gym | בלוק B - שבועות 9-16", "brand": "Gym · בלוק B (9–16)", "trackerTitle": "מעקב בלוק B (גירוי חדש):", "weeks": [9, 10, 11, 12, 13, 14, 15, 16], "short": "S.K Gym", "focus": {"badge": "מה בבלוק B", "title": "אותו מבנה, תרגילים מתחלפים", "points": ["התרגילים מתחלפים כדי לתת גירוי חדש: סקוואט במוט, לחיצה בשיפוע בסמית', מכונות וכבלים שונים.", "ההתקדמות זהה: מגיעים לקצה העליון של טווח החזרות, ומעלים משקל.", "חדר כושר מלא: מוטות ומתקן סקוואט, סמית', מכונות רגליים, כבלים, דאמבלים. הליכה: בבית על ההליכון."]}, "days": [{"label": "יום ראשון", "nav": "ראשון", "time": "~55–60 דק'", "title": "עליון A: חזה עליון + גב", "items": [{"id": "a1", "name": "לחיצה בשיפוע בסמית'", "en": "Smith Incline Press", "sets": "3 סטים × 6–8", "target": "חזה עליון", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["ספה ב-30° מתחת למוט הסמית', המוט מעל החזה העליון.", "משחררים את המוט ומורידים לאט לחזה העליון. מרפקים ב-45°.", "דוחפים חזק למעלה. בסוף הסט נועלים את המוט בסיבוב פרקי הידיים."], "video": "obiun9YWitM", "tag": "כבד", "superset": null}, {"id": "a2", "name": "פולי עליון באחיזה צרה (ידיים זו מול זו)", "en": "Neutral-Grip Pulldown", "sets": "3 סטים × 8–12", "target": "גב רחב", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["ידית V צרה. יושבים, ירכיים מתחת לכריות.", "מושכים את הידית אל מתחת לסנטר, מרפקים למטה וצמודים.", "חוזרים לאט עד מתיחה מלאה למעלה."], "video": "lmmShS3KLB4", "tag": null, "superset": null}, {"id": "a3", "name": "לחיצת חזה שטוחה עם דאמבלים", "en": "Flat DB Press", "sets": "3 סטים × 8–12", "target": "חזה", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["ספה שטוחה, דאמבלים מעל החזה, מרפקים ב-45°.", "מורידים לאט עד גובה החזה ודוחפים למעלה."], "video": "omGiL5h2R_I", "tag": null, "superset": null}, {"id": "a4", "name": "חתירה בכבל ביד אחת", "en": "Single-Arm Cable Row", "sets": "3 סטים × 10–12 לכל יד", "target": "גב", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["יושבים מול כבל עם ידית אחת. גב ישר.", "מושכים את הידית לצד המותן ומסובבים מעט את הגו עם התנועה.", "מחזירים לאט עד מתיחה מלאה קדימה. מסיימים יד ומחליפים."], "video": "NwyhyKyFgf4", "tag": null, "superset": null}, {"id": "a5", "name": "הרחקות לצדדים עם דאמבלים", "en": "DB Lateral Raise", "sets": "3 סטים × 12–20", "target": "כתף אמצעית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["דאמבל בכל יד. מרימים לצדדים עד גובה הכתפיים, מרפקים קצת כפופים.", "בלי נדנוד. מורידים לאט."], "video": "ssAo_xwFt5c", "tag": null, "superset": "A"}, {"id": "a6", "name": "כפיפת מרפקים במכונת כומר", "en": "Machine Preacher Curl", "sets": "3 סטים × 10–12", "target": "יד קדמית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר. לא נשענים עם המרפק הפנימי על הכרית אם הקמיצה מגיבה", "how": ["בית השחי צמוד לכרית, הזרועות על הכרית.", "מכופפים עד למעלה ועוצרים שנייה.", "מורידים לאט, כמעט עד יד ישרה."], "video": "g7hiWfUH6i8", "tag": null, "superset": "A"}]}, {"label": "יום שני", "nav": "שני", "time": "~55–60 דק'", "title": "תחתון A: סקוואט", "items": [{"id": "b1", "name": "סקוואט במוט", "en": "Barbell Back Squat", "sets": "3 סטים × 6–8", "target": "ירכיים + ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה. במתקן עם תפסי ביטחון", "how": ["המוט על השרירים בגב העליון, רגליים ברוחב הכתפיים, אצבעות מעט החוצה.", "לוקחים אוויר ונועלים את הבטן. יורדים עד ירכיים מקבילות או מעט יותר.", "ברכיים בכיוון האצבעות. דוחפים מכל כף הרגל ועולים."], "video": "QLbMsabhBqY", "tag": "כבד", "superset": null}, {"id": "b2", "name": "דדליפט רומני במוט", "en": "Barbell Romanian Deadlift", "sets": "3 סטים × 8–10", "target": "ירך אחורית + ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה. אפשר רצועות הרמה", "how": ["עומדים, רגליים ברוחב האגן, מחזיקים את המוט מול הירכיים.", "ברכיים קצת כפופות ונשארות ככה. דוחפים את הישבן אחורה, והמוט מחליק צמוד לרגליים.", "יורדים 3 שניות עד מתיחה חזקה בירך האחורית (בערך מתחת לברכיים). הגב ישר כל הזמן.", "עולים על ידי דחיפת האגן קדימה."], "video": "xgusDooVfKU", "tag": "כבד", "superset": null}, {"id": "b3", "name": "כפיפת ברכיים בישיבה במכונה", "en": "Seated Leg Curl", "sets": "3 סטים × 10–12", "target": "ירך אחורית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["הברך מול הציר, כרית הירכיים צמודה.", "מכופפים עד הסוף, עוצרים שנייה וחוזרים לאט."], "video": "Z5pRnXaCjpM", "tag": null, "superset": null}, {"id": "b4", "name": "לאנג'ים בהליכה", "en": "DB Walking Lunge", "sets": "2 סטים × 12 לכל רגל", "target": "ירכיים + ישבן", "weight": "דאמבל בכל יד", "how": ["צעד גדול קדימה, יורדים עד שהברך האחורית כמעט נוגעת ברצפה.", "דוחפים מהעקב הקדמי וממשיכים בצעד הבא עם הרגל השנייה."], "video": "I_rMQRrwseI", "tag": null, "superset": null}, {"id": "b5", "name": "פשיטת ברכיים במכונה", "en": "Leg Extension", "sets": "3 סטים × 12–15", "target": "ירך קדמית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["מכוונים את המושב כך שהברך מול הציר של המכונה, והכרית על הקרסול.", "מיישרים את הרגליים עד הסוף ועוצרים שנייה למעלה.", "מורידים לאט, 3 שניות."], "video": "MXvSzXEBOTI", "tag": null, "superset": "A"}, {"id": "b6", "name": "עליות תאומים בעמידה במכונה", "en": "Standing Calf Raise", "sets": "3 סטים × 10–15", "target": "שוקיים", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["הכריות על הכתפיים, קצות כפות הרגליים על המדרגה, העקבים באוויר.", "מורידים את העקבים למתיחה מלאה ועוצרים 2 שניות.", "עולים לקצות האצבעות הכי גבוה שאפשר."], "video": "ucy86plaufg", "tag": null, "superset": "A"}]}, {"label": "יום שלישי (הליכה בבית)", "nav": "שלישי", "kind": "cardio", "time": "30–45 דק'", "title": "הליכה בהליכון", "items": [{"id": "c1", "name": "הליכה בהליכון בבית", "sets": "30–45 דק'", "weight": "קצב שיחה, 5.0–5.6 קמ\"ש, שיפוע 2%–6%. בערב או בבוקר של יום מנוחה.", "cardio": true}]}, {"label": "יום רביעי", "nav": "רביעי", "time": "~55–60 דק'", "title": "עליון B: גב + כתפיים + ידיים", "items": [{"id": "d1", "name": "עליות מתח עם משקל", "en": "Weighted Pull-Up", "sets": "4 סטים × 5–8", "target": "גב רחב", "weight": "חגורת משקל או דאמבל בין הרגליים. משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["אחיזה קצת רחבה מהכתפיים, כפות ידיים קדימה. מתחילים מתלייה עם ידיים ישרות.", "מושכים עד שהסנטר עובר את המוט, מובילים עם המרפקים כלפי מטה.", "יורדים לאט, 2–3 שניות, עד ידיים ישרות.", "כשהקמיצה מגיבה: אפשר רצועות הרמה (סטרפס)."], "video": "QZue7F_Zk3A", "tag": "כבד", "superset": null}, {"id": "d2", "name": "לחיצת כתפיים במכונה", "en": "Machine Shoulder Press", "sets": "3 סטים × 8–10", "target": "כתפיים", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["מכוונים את המושב כך שהידיות בגובה הכתפיים, גב צמוד למשענת.", "דוחפים למעלה עד ידיים כמעט ישרות, ויורדים לאט."], "video": "Anu8s_nkNpM", "tag": null, "superset": null}, {"id": "d3", "name": "חתירה בכבל באחיזה רחבה", "en": "Wide-Grip Cable Row", "sets": "3 סטים × 10–12", "target": "גב עליון + אחורי הכתף", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["מוט רחב בכבל, כפות ידיים למטה.", "מושכים לחזה התחתון, מרפקים פתוחים לצדדים, מצמידים שכמות.", "מחזירים לאט."], "video": "cAeBmvpt31A", "tag": null, "superset": null}, {"id": "d4", "name": "לחיצת חזה במכונה", "en": "Machine Chest Press", "sets": "3 סטים × 8–12", "target": "חזה", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["הידיות בגובה אמצע החזה, גב צמוד למשענת.", "דוחפים קדימה בלי לנעול מרפקים, וחוזרים לאט עד מתיחה בחזה."], "video": "Nv7TPc6btPk", "tag": null, "superset": null}, {"id": "d5", "name": "פרפר הפוך במכונה", "en": "Reverse Pec Deck", "sets": "3 סטים × 12–15", "target": "כתף אחורית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["יושבים עם החזה למשענת, הידיות בגובה הכתפיים.", "פותחים את הידיים לאחור בקשת רחבה, מרפקים קצת כפופים.", "עוצרים שנייה ומחזירים לאט."], "video": "Y7ZKBP5bMwg", "tag": null, "superset": "A"}, {"id": "d6", "name": "פשיטת מרפקים בכבל עם חבל", "en": "Rope Pushdown", "sets": "3 סטים × 10–15", "target": "יד אחורית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["כבל עליון עם חבל (נוח יותר לעצב מאשר מוט ישר).", "המרפקים צמודים לצלעות ולא זזים. מיישרים את הידיים למטה ופותחים את החבל בסוף.", "חוזרים לאט עד זווית ישרה במרפק."], "video": "d-ySLTHUgQA", "tag": null, "superset": "A"}, {"id": "d7", "name": "הרחקה לצד בכבל", "en": "Cable Lateral Raise", "sets": "2 סטים × 12–15", "target": "כתף אמצעית (רוחב)", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר (יד אחת בכל פעם)", "how": ["כבל בגובה הנמוך ביותר עם ידית אחת. עומדים בצד, היד הרחוקה מהמכונה אוחזת בידית.", "מרימים את היד לצד, מרפק קצת כפוף, עד גובה הכתף.", "מורידים לאט. מסיימים יד אחת ומחליפים."], "video": "qghfvzcoS2I", "tag": null, "superset": "B"}, {"id": "d8", "name": "כפיפות מרפקים בשיפוע", "en": "Incline DB Curl", "sets": "2 סטים × 10–12", "target": "יד קדמית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["ספה ב-45°, הידיים תלויות מאחורי הגוף.", "מכופפים בלי להזיז את המרפקים קדימה, ומורידים לאט עד יד ישרה."], "video": "5uAAU3sUURA", "tag": null, "superset": "B"}]}, {"label": "יום חמישי", "nav": "חמישי", "time": "~55–60 דק'", "title": "תחתון B: ישבן + ירך אחורית", "items": [{"id": "e1", "name": "האק סקוואט", "en": "Hack Squat", "sets": "3 סטים × 8–12", "target": "ירכיים קדמיות", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["גב צמוד, רגליים באמצע הפלטה. יורדים עמוק ולאט.", "דוחפים מכל כף הרגל ועולים."], "video": "-lAnEGH2blE", "tag": null, "superset": null}, {"id": "e2", "name": "היפ-טראסט במוט", "en": "Barbell Hip Thrust", "sets": "3 סטים × 8–12", "target": "ישבן", "weight": "משקל שמאפשר את מספר החזרות עם 1–2 חזרות ברזרבה", "how": ["גב עליון על ספה, מוט מרופד על המותניים.", "דוחפים מהעקבים עד גוף ישר, לוחצים ישבן 2 שניות ויורדים לאט."], "video": "yTnWiBECvLk", "tag": "כבד", "superset": null}, {"id": "e3", "name": "פשיטת גב ב-45°", "en": "45° Back Extension", "sets": "3 סטים × 10–15", "target": "ירך אחורית + ישבן + גב תחתון", "weight": "משקל גוף, ומעליו פלטה בידיים", "how": ["הכרית מתחת לעצם האגן, עקבים תחת הכריות.", "מתכופפים מהאגן למטה עם גב ישר עד מתיחה בירך האחורית.", "עולים בכיווץ הישבן עד קו ישר, לא מעבר."], "video": "7Z-FQ_yA7uM", "tag": null, "superset": null}, {"id": "e4", "name": "כפיפת ברכיים בשכיבה במכונה", "en": "Lying Leg Curl", "sets": "3 סטים × 10–12", "target": "ירך אחורית", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["שוכבים על הבטן, הכרית מעל העקבים.", "מכופפים עד הסוף, האגן צמוד. מורידים לאט, 3 שניות."], "video": "kLJlqfn_bDM", "tag": null, "superset": null}, {"id": "e5", "name": "עליות תאומים בישיבה", "en": "Seated Calf Raise", "sets": "3 סטים × 12–15", "target": "שוקיים", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["יושבים, הכרית על הירכיים מעל הברכיים, קצות כפות הרגליים על המדרגה.", "מורידים עקבים למתיחה ועוצרים 2 שניות, ועולים הכי גבוה שאפשר."], "video": "QCfQyNXEzS8", "tag": null, "superset": "A"}, {"id": "e6", "name": "כפיפות בטן בכבל על הברכיים", "en": "Kneeling Cable Crunch", "sets": "3 סטים × 12–15", "target": "בטן", "weight": "משקל שמאפשר את מספר החזרות, סט אחרון עד שאי אפשר יותר", "how": ["כבל עליון עם חבל. כורעים על הברכיים מול המכונה, החבל ליד הראש.", "מכופפים את הגב ומקרבים את המרפקים לברכיים, הירכיים לא זזות.", "חוזרים לאט למעלה."], "video": "kc0PRn372lo", "tag": null, "superset": "A"}]}, {"label": "שישי או שבת (הליכה בבית)", "nav": "סופ\"ש", "kind": "cardio", "time": "30–45 דק'", "title": "הליכה בהליכון", "items": [{"id": "f1", "name": "הליכה בהליכון בבית", "sets": "30–45 דק'", "weight": "קצב שיחה, 5.0–5.6 קמ\"ש, שיפוע 2%–6%. בערב או בבוקר של יום מנוחה.", "cardio": true}]}], "nutrition": {"target": {"kcal": "2,000→2,150", "p": "150–170 גר'", "c": "200–240 גר'", "f": "55–70 גר'"}, "range": {"kcal": [2000, 2250], "p": [150, 175], "c": [190, 250], "f": [55, 75]}, "badge": "בלוק B | בנייה נקייה", "title": "עודף קטן שהולך לשריר ולא לבטן", "intro": "אחרי 15 שנות אימון, בניית שריר איטית: <strong>כ-0.25–0.5 ק\"ג שריר בחודש</strong> במקרה הטוב. לכן העודף קטן: מספיק כדי לתת לגוף חומר לבנות, לא מספיק כדי להחזיר שומן. <strong>תנאי מעבר:</strong> אם בסוף שבוע 8 עדיין לא הגעת לרמת השומן שרצית, מבצעים את האימונים של שלב 4 ונשארים על 1,800–1,850 קק\"ל.", "stages": [["9–10", "~2,000", "מוסיפים פחמימה: אורז/בטטה בצהריים ושייק גדול אחרי אימון."], ["11–16", "~2,150", "מכוונים לעלייה של <strong>כ-0.1–0.2 ק\"ג בשבוע</strong> בממוצע."]], "rules": ["<strong>חלבון 150–170 גר'</strong>. מחלקים ל-4 מנות של 35–45 גר' לאורך היום.", "עלייה של יותר מ-0.3 ק\"ג בשבוע: מורידים 150 קק\"ל. המשקל לא זז שבועיים: מוסיפים 100–150 קק\"ל.", "<strong>מותניים</strong> הם המדד המרכזי: אם היקף המותניים עולה ביותר מ-1 ס\"מ בחודש, העודף גדול מדי.", "את רוב הפחמימות אוכלים <strong>בארוחה שלפני האימון ובזו שאחריו</strong>.", "ארוחת לפני שינה עשירה בחלבון (יוגורט חלבון או קוטג') תומכת בבנייה בלילה.", "קריאטין מונוהידרט 3–5 גר' ביום הוא התוסף עם הכי הרבה מחקר לבניית שריר וכוח. כדאי להתייעץ עם רופא לפני שמתחילים."], "meals": [{"id": "b", "title": "🌅 ארוחת בוקר", "options": [{"name": "עוגת פאדג' חלבון (הקבועה שלך)", "tag": "בסיס", "desc": "סקופ חלבון שוקולד-נוגט, ביצה L, כפית חמאת בוטנים, כפית ממרח תמרים, 2 כפות מים. אייר פרייר 165°C, 6–7 דק'.", "kcal": 295, "p": 33, "c": 14, "f": 10}, {"name": "פאדג' חלבון + סקייר ופירות יער", "tag": "מומלץ", "desc": "העוגה הקבועה + 150 גר' סקייר/יוגורט יווני 0% + 100 גר' פירות יער קפואים. אותה ארוחה, עוד 17 גר' חלבון.", "kcal": 435, "p": 50, "c": 30, "f": 10}, {"name": "שקשוקת חלבון", "desc": "2 ביצים + 2 חלבונים ברוטב עגבניות, 100 גר' קוטג' 5% בצד, פרוסת מחמצת (50 גר').", "kcal": 435, "p": 34, "c": 32, "f": 16}, {"name": "דייסת חלבון", "desc": "40 גר' שיבולת שועל במים, אחרי בישול מערבבים סקופ חלבון, 100 גר' פירות יער וכפית חמאת בוטנים.", "kcal": 345, "p": 30, "c": 41, "f": 7}, {"name": "טוסט ביצים כפול", "tag": "ימי אימון רגליים", "desc": "2 פרוסות מחמצת, 2 ביצים + 2 חלבונים מקושקשים, 50 גר' גבינה צפתית 5%, ירקות. לצד 150 גר' סקייר.", "kcal": 575, "p": 48, "c": 56, "f": 17}]}, {"id": "l", "title": "☀️ ארוחת צהריים", "options": [{"name": "עוף + אורז + ירקות (הקבועה שלך)", "tag": "בסיס", "desc": "180–200 גר' חזה עוף (משקל נא), 3 כפות אורז מבושל, ירקות אפויים וסלט, כפית שמן זית.", "kcal": 440, "p": 50, "c": 30, "f": 10}, {"name": "דג לבן + אורז + טחינה", "desc": "250 גר' פילה אמנון/דניס (נא), 4 כפות אורז, ירקות אפויים, כף טחינה גולמית.", "kcal": 520, "p": 58, "c": 41, "f": 13}, {"name": "סלמון + בטטה", "tag": "1–2 בשבוע (אומגה 3)", "desc": "150 גר' פילה סלמון, בטטה קטנה (150 גר'), שעועית ירוקה/ברוקולי.", "kcal": 490, "p": 34, "c": 40, "f": 19}, {"name": "קציצות בקר 5% + קינואה", "desc": "180 גר' בקר טחון 5% (קציצות באייר פרייר), 4 כפות קינואה, סלט ירוק עם כפית שמן זית.", "kcal": 445, "p": 42, "c": 28, "f": 15}, {"name": "סלט עוף ועדשים", "desc": "200 גר' חזה עוף, 150 גר' עדשים ירוקות מבושלות, ירקות קצוצים, לימון וכפית שמן זית.", "kcal": 475, "p": 60, "c": 37, "f": 8}, {"name": "עוף + אורז מנה מלאה", "tag": "ימי אימון", "desc": "200 גר' חזה עוף, 150 גר' אורז מבושל (כ-6 כפות), ירקות, כפית שמן זית.", "kcal": 560, "p": 52, "c": 50, "f": 10}]}, {"id": "d", "title": "🌙 ארוחת ערב", "options": [{"name": "פיצת חלבון טונה/קוטג'", "tag": "בסיס", "desc": "בסיס טונה מסוננת (או קוטג' 5%) + ביצה, 25–30 גר' מוצרלה/פרמזן, 2 אנשובי, רוטב עגבניות בלי סוכר.", "kcal": 365, "p": 43, "c": 6, "f": 17}, {"name": "צלחת קוטג' וביצים עם מחמצת", "tag": "בסיס", "desc": "פרוסת מחמצת, חצי גביע עד גביע קוטג' 5%, 2 ביצים קשות, ירקות וכרוב כבוש.", "kcal": 420, "p": 38, "c": 30, "f": 17}, {"name": "סרדינים על מחמצת/צנימים", "tag": "בסיס", "desc": "1–2 פחיות סרדינים מסוננות, מעוכות עם חרדל ולימון, על פרוסת מחמצת או צנימים.", "kcal": 465, "p": 42, "c": 28, "f": 20}, {"name": "מוקפץ הודו וירקות", "desc": "150 גר' חזה הודו ברצועות, ירקות מוקפצים, 2 כפות אורז, כפית שמן ורוטב סויה דל נתרן.", "kcal": 340, "p": 38, "c": 26, "f": 7}, {"name": "חביתת ירקות + גבינה לבנה", "desc": "2 ביצים + 2 חלבונים עם ירקות, 100 גר' גבינה לבנה 5%, סלט ופרוסת מחמצת.", "kcal": 435, "p": 34, "c": 36, "f": 16}, {"name": "סנדוויצ'ים כפולים ליום לימודים ארוך", "tag": "שני עד 22:00", "desc": "4 פרוסות שיפון/מחמצת, טונה במים, 2 ביצים קשות, חרדל, כפית טחינה וחמוצים.", "kcal": 640, "p": 52, "c": 56, "f": 20}]}, {"id": "s", "title": "🍏 נשנושים ותוספות", "multi": true, "hint": "אפשר לבחור כמה. כאן מוסיפים את הקלוריות של השלב החדש בלי לשנות את הארוחות הקבועות.", "options": [{"name": "שייק חלבון + בננה אחרי אימון", "tag": "ימי אימון", "desc": "סקופ חלבון במים + בננה בינונית. הפחמימה עוזרת להתאוששות.", "kcal": 225, "p": 25, "c": 30, "f": 2}, {"name": "יוגורט חלבון (20 גר' חלבון)", "desc": "גביע יוגורט/מעדן חלבון. מתאים לנשנוש בין ארוחות או לפני שינה.", "kcal": 150, "p": 20, "c": 13, "f": 2}, {"name": "חצי גביע קוטג' 5% + ירקות", "desc": "125 גר' קוטג' עם מלפפון/גמבה.", "kcal": 145, "p": 15, "c": 6, "f": 6}, {"name": "3 פריכיות אורז + 100 גר' גבינה לבנה 5%", "desc": "", "kcal": 185, "p": 11, "c": 25, "f": 5}, {"name": "אדממה (150 גר' מקולף)", "desc": "מהמקפיא, אידוי של 4 דק' ומלח גס.", "kcal": 180, "p": 18, "c": 13, "f": 8}, {"name": "תפוח + 15 גר' שקדים", "desc": "", "kcal": 170, "p": 3, "c": 24, "f": 8}, {"name": "2 ביצים קשות", "desc": "", "kcal": 140, "p": 12, "c": 1, "f": 10}, {"name": "שייק גדול אחרי אימון", "tag": "בנייה", "desc": "סקופ חלבון + 40 גר' שיבולת שועל טחונה + בננה, בשייקר עם מים.", "kcal": 375, "p": 30, "c": 57, "f": 5}]}]}, "guide": [{"badge": "מילון קצר", "title": "מה כל מילה אומרת", "points": ["<strong>חזרה</strong> = פעם אחת שעושים את התנועה. <strong>סט</strong> = כמה חזרות ברצף ואז מנוחה.", "<strong>\"1–2 חזרות ברזרבה\"</strong> = מסיימים את הסט כשמרגישים שאפשר היה לעשות עוד 1–2 חזרות נקיות. ככה עובדים כבד בלי להישחק.", "<strong>סופר-סט</strong> = שני תרגילים ברצף בלי מנוחה ביניהם, ורק אחרי שניהם נחים. מסומן במסגרת צבעונית.", "<strong>מנוחה</strong>: 2 דקות בתרגילים שמסומנים \"כבד\", 90 שניות בשאר התרגילים הגדולים, 60 שניות בבידוד ובסופר-סטים.", "<strong>חימום (5–7 דק')</strong>: 3 דקות הליכה מהירה או אופניים, ואז בתרגיל הראשון 2–3 סטים קלים בהדרגה (למשל 50% × 8, 70% × 5, 85% × 2) לפני סטי העבודה."]}, {"badge": "מתי להעלות משקל", "title": "קודם חזרות, אחר כך משקל", "points": ["לכל תרגיל יש טווח (למשל 8–12). <strong>כשמגיעים לקצה העליון בכל הסטים</strong>, מעלים משקל בפעם הבאה.", "<strong>כמה להעלות:</strong> 2.5 ק\"ג בתרגילי מוט לפלג גוף עליון, 5 ק\"ג בתרגילי רגליים כבדים, דרגה אחת במכונות ובכבלים.", "אחרי שמעלים משקל, מתחילים שוב מהמספר הנמוך בטווח ובונים חזרה למעלה.", "<strong>רושמים</strong> את המשקל של התרגיל הראשון בכל יום (בפתק בטלפון). זה מה שמראה שאתה מתקדם.", "<strong>היד והעצב האולנרי:</strong> אם העקצוץ או חוסר התחושה בקמיצה או בזרת מתגברים, משתמשים ברצועות הרמה בתרגילי משיכה ודדליפט, מעדיפים חבל על מוט ישר בכבלים, ומעדכנים את הרופא או הפיזיותרפיסט."]}, {"badge": "אירובי", "title": "הליכה בבית, לא בחדר הכושר", "points": ["את השומן מורידה התזונה. ההליכה מגדילה את ההוצאה היומית בלי לפגוע בהתאוששות, ולכן היא מספיקה.", "<strong>2–3 הליכות בשבוע</strong> בהליכון בבית, 30–45 דקות, וגם <strong>8,000–10,000 צעדים ביום</strong>.", "בשבוע עמוס, ההליכות הן הדבר הראשון שאפשר לקצר. את אימוני הכוח לא מקצרים."]}, {"badge": "אחרי שבוע 16", "title": "שבוע דילואד (לפני שבוע הבא)", "points": ["אותם תרגילים, <strong>2 סטים בלבד</strong> בכל תרגיל.", "משקל של כ-70%–80% מהרגיל, ונשארות 3–4 חזרות ברזרבה. בלי סטים עד שאי אפשר יותר.", "ההליכות כרגיל. שקילה, מדידת מותניים ותמונות."]}], "theme": {"BG": "#120c18", "CARD": "#20152b", "CARDIN": "#2b1d3a", "BORDER": "#46305c", "ACCENT": "#c084fc", "ACCENT2": "#7e22ce", "GLOW": "rgba(192,132,252,0.18)"}}};
+let PH = 'A';
+try { const q = new URLSearchParams(location.search).get('block'); PH = (q === 'A' || q === 'B') ? q : (localStorage.getItem('sk_gym_block') || 'A'); } catch (e) {}
+if (!ALL[PH]) PH = 'A';
+try { localStorage.setItem('sk_gym_block', PH); } catch (e) {}
+const P = ALL[PH];
+(function () {
+  const T = P.theme, r = document.documentElement.style;
+  r.setProperty('--bg', T.BG); r.setProperty('--card', T.CARD); r.setProperty('--card-inner', T.CARDIN);
+  r.setProperty('--border-color', T.BORDER); r.setProperty('--accent', T.ACCENT); r.setProperty('--accent-dark', T.ACCENT2); r.setProperty('--accent-glow', T.GLOW);
+  const sw = document.createElement('div'); sw.className = 'phase-switch';
+  [['A', 'בלוק A · שבועות 1–8'], ['B', 'בלוק B · שבועות 9–16']].forEach(([k, l]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = l;
+    b.className = 'phase-btn' + (k === PH ? ' active' : '');
+    b.onclick = () => { if (k === PH) return; try { localStorage.setItem('sk_gym_block', k); } catch (e) {} location.href = location.pathname + '?block=' + k; };
+    sw.appendChild(b);
+  });
+  const tabs = document.querySelector('.top-tabs'); tabs.parentNode.insertBefore(sw, tabs);
+})();
+const KEY = P.storageKey;
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+state.t = state.t || {}; state.w = state.w || {}; state.log = state.log || {}; state.meals = state.meals || {}; state.open = state.open || {};
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v;
+    else if (k === 'html') n.innerHTML = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  kids.flat().forEach(k => { if (k == null) return; n.appendChild(typeof k === 'string' ? document.createTextNode(k) : k); });
+  return n;
+}
+
+document.title = P.title;
+document.getElementById('brandName').textContent = P.brand;
+document.querySelectorAll('.top-tab-btn').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+function showTab(t) {
+  document.querySelectorAll('.tab-view').forEach(v => v.classList.toggle('active', v.id === 'view-' + t));
+  document.querySelectorAll('.top-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  document.getElementById('totalBar').classList.toggle('show', t === 'nutrition');
+  window.scrollTo(0, 0);
+}
+
+/* weeks */
+document.getElementById('trackerTitle').textContent = '🎯 ' + P.trackerTitle;
+const wg = document.getElementById('weeksGrid');
+P.weeks.forEach(w => {
+  const b = el('div', { class: 'week-btn' + (state.w[w] ? ' checked' : ''), onclick: () => { state.w[w] = !state.w[w]; b.classList.toggle('checked', state.w[w]); countWeeks(); save(); } }, 'שבוע ' + w);
+  wg.appendChild(b);
+});
+function countWeeks() { document.getElementById('weeksCount').textContent = P.weeks.filter(w => state.w[w]).length + '/' + P.weeks.length + ' שבועות'; }
+countWeeks();
+
+/* focus */
+const fc = document.getElementById('focusCard');
+fc.classList.add('focus-mini');
+const det = el('details', null,
+  el('summary', null, 'ℹ️ ' + P.focus.badge + ' (לחץ לפתיחה)'),
+  el('h2', null, P.focus.title),
+  el('ul', { class: 'clean muted' }, P.focus.points.map(p => el('li', { html: p }))));
+fc.appendChild(det);
+
+/* days */
+const daysWrap = document.getElementById('days');
+const nav = el('div', { class: 'day-nav' });
+P.days.forEach((d, di) => nav.appendChild(el('button', { class: 'nav-chip ' + (d.kind || ''), type: 'button', onclick: () => document.getElementById('day' + di).scrollIntoView({ behavior: 'smooth', block: 'start' }) }, d.nav || d.label)));
+daysWrap.appendChild(nav);
+P.days.forEach((d, di) => {
+  const card = el('div', { class: 'card day-card ' + (d.kind || ''), id: 'day' + di });
+  const prog = el('span', { class: 'day-progress' });
+  const body = el('div', { class: 'day-body' + (state.open[di] === false ? ' collapsed' : '') });
+  const head = el('div', { class: 'day-head', onclick: () => { body.classList.toggle('collapsed'); state.open[di] = !body.classList.contains('collapsed'); save(); } },
+    el('div', null,
+      el('div', { class: 'day-label ' + (d.kind || '') }, d.label),
+      el('div', { class: 'day-sub' }, d.kind === 'optional' ? el('span', { class: 'opt-chip' }, 'לא חובה') : null, d.time ? el('span', { class: 'time-chip' }, '⏱️ ' + d.time) : null),
+      el('h2', null, d.title)), prog);
+  card.appendChild(head);
+  body.appendChild(el('div', { class: 'sticky-day ' + (d.kind || '') }, '📅 ' + d.label + (d.kind === 'optional' ? ' (לא חובה)' : '')));
+  if (d.intro) body.appendChild(el('p', { class: 'muted' }, d.intro));
+  const updateProg = () => { const n = d.items.filter(i => state.t[i.id]).length; prog.textContent = n + '/' + d.items.length + ' ✓'; };
+  let prevSS = null, box = null, pos = 0;
+  const ssCount = new Set(d.items.filter(i => i.superset).map(i => i.superset)).size;
+  if (ssCount) body.appendChild(el('div', { class: 'ss-summary' }, '🔗 באימון הזה ' + (ssCount === 1 ? 'סופר-סט אחד' : ssCount + ' סופר-סטים') + '. הם מסומנים במסגרת צבעונית.'));
+  d.items.forEach((it, idx) => {
+    const cb = el('input', { type: 'checkbox' });
+    cb.checked = !!state.t[it.id];
+    const ss = it.superset || null;
+    const nextSS = d.items[idx + 1] && d.items[idx + 1].superset;
+    const row = el('div', { class: 'ex' + (it.cardio ? ' cardio-item' : '') + (ss ? ' in-ss' : '') + (cb.checked ? ' done' : '') });
+    if (ss && ss !== prevSS) {
+      const n = d.items.filter(i => i.superset === ss).length;
+      box = el('div', { class: 'ss-box' },
+        el('div', { class: 'ss-head' }, el('span', { class: 'ss-big' }, '🔗 סופר-סט ' + ss),
+          el('div', { class: 'ss-rule' }, n + ' תרגילים ברצף, בלי מנוחה ביניהם. רק אחרי האחרון נחים 60–90 שנ\' וחוזרים על כל הזוג.')));
+      body.appendChild(box); pos = 0;
+    }
+    prevSS = ss;
+    cb.addEventListener('change', () => { state.t[it.id] = cb.checked; row.classList.toggle('done', cb.checked); updateProg(); save(); });
+    let ssTag = null;
+    if (ss) { pos++; const n = d.items.filter(i => i.superset === ss).length; ssTag = el('div', { class: 'ss-tag' }, 'סופר-סט ' + ss + ' · תרגיל ' + pos + ' מתוך ' + n + (pos < n ? ' ← מיד לתרגיל הבא' : ' ← עכשיו מנוחה')); }
+    const top = el('label', { class: 'ex-top' }, cb, el('div', { class: 'ex-title' },
+      ssTag,
+      el('div', { class: 'ex-name' }, it.name, it.tag ? el('span', { class: 'tag' }, it.tag) : null),
+      it.en ? el('div', { class: 'ex-en' }, it.en) : null,
+      el('div', { class: 'ex-sets' }, it.sets)));
+    row.appendChild(top);
+    const info = el('div', { class: 'ex-info' });
+    if (it.target) info.appendChild(el('div', null, '🎯 ', el('strong', null, 'עובד על: '), it.target));
+    if (it.weight) info.appendChild(el('div', null, it.cardio ? '📌 ' : '⚖️ ', it.cardio ? '' : el('strong', null, 'משקל: '), it.weight));
+    if (it.how && it.how.length) {
+      info.appendChild(el('div', { class: 'how-title' }, 'איך מבצעים:'));
+      info.appendChild(el('ol', { class: 'how' }, it.how.map(h => el('li', null, h))));
+    }
+    if (it.video) info.appendChild(el('a', { class: 'video-btn', href: 'https://www.youtube.com/watch?v=' + it.video, target: '_blank', rel: 'noopener' }, '▶ סרטון הדגמה'));
+    row.appendChild(info);
+    (ss ? box : body).appendChild(row);
+    if (ss && nextSS !== ss) box.appendChild(el('div', { class: 'ss-foot' }, '⏸️ סוף סופר-סט ' + ss + ': מנוחה 60–90 שנ\', ואז עוד סבב של שני התרגילים'));
+  });
+  card.appendChild(body);
+  daysWrap.appendChild(card);
+  updateProg();
+});
+
+function resetWeek() {
+  if (!confirm('לאפס את סימוני האימונים של השבוע?')) return;
+  state.t = {}; save(); location.reload();
+}
+
+/* timer */
+let timerInterval;
+function startTimer(sec) {
+  clearInterval(timerInterval);
+  let t = sec; const d = document.getElementById('timerDisplay');
+  d.textContent = t + ' שנ\'';
+  timerInterval = setInterval(() => {
+    t--;
+    if (t <= 0) { clearInterval(timerInterval); d.textContent = 'צא לסט!'; if (navigator.vibrate) navigator.vibrate([200, 100, 200]); }
+    else d.textContent = t + ' שנ\'';
+  }, 1000);
+}
+
+/* nutrition */
+const N = P.nutrition;
+document.getElementById('macroBar').innerHTML = '';
+[[N.target.kcal, 'קק"ל (יעד)'], [N.target.p, 'חלבון'], [N.target.c, 'פחמימה'], [N.target.f, 'שומן']].forEach(([v, l]) =>
+  document.getElementById('macroBar').appendChild(el('div', null, el('strong', null, v), l)));
+const ni = document.getElementById('nutritionIntro');
+ni.appendChild(el('span', { class: 'badge' }, N.badge));
+ni.appendChild(el('h2', null, N.title));
+ni.appendChild(el('p', { class: 'muted', html: N.intro }));
+if (N.stages) {
+  const tbl = el('table', { class: 'stage-table' }, el('tr', null, el('th', null, 'שבועות'), el('th', null, 'קק"ל'), el('th', null, 'מה עושים')));
+  N.stages.forEach(s => tbl.appendChild(el('tr', null, el('td', null, s[0]), el('td', null, s[1]), el('td', { html: s[2] }))));
+  ni.appendChild(tbl);
+}
+ni.appendChild(el('h3', null, 'כללי הזהב של השלב'));
+ni.appendChild(el('div', { class: 'inner' }, el('ul', { class: 'clean' }, N.rules.map(r => el('li', { html: r })))));
+
+const ms = document.getElementById('mealSections');
+N.meals.forEach(cat => {
+  ms.appendChild(el('h3', null, cat.title));
+  if (cat.hint) ms.appendChild(el('p', { class: 'muted', style: 'margin:0 0 4px; font-size:0.82rem;' }, cat.hint));
+  const multi = !!cat.multi;
+  const sel = state.meals[cat.id] || (multi ? [] : null);
+  cat.options.forEach((o, oi) => {
+    const inp = el('input', { type: multi ? 'checkbox' : 'radio', name: 'm_' + cat.id });
+    inp.checked = multi ? sel.includes(oi) : sel === oi;
+    const box = el('label', { class: 'opt' + (inp.checked ? ' selected' : '') }, inp,
+      el('div', null,
+        el('div', { class: 'opt-name' }, o.name, o.tag ? el('span', { class: 'tag' }, o.tag) : null),
+        el('div', { class: 'opt-desc', html: o.desc }),
+        el('div', { class: 'opt-macros' }, '~' + o.kcal + ' קק"ל | ' + o.p + ' ח׳ | ' + o.c + ' פ׳ | ' + o.f + ' ש׳')));
+    inp.addEventListener('change', () => {
+      if (multi) {
+        let arr = state.meals[cat.id] || [];
+        arr = inp.checked ? [...new Set([...arr, oi])] : arr.filter(x => x !== oi);
+        state.meals[cat.id] = arr;
+      } else state.meals[cat.id] = oi;
+      ms.querySelectorAll('input[name="m_' + cat.id + '"]').forEach(x => x.closest('.opt').classList.toggle('selected', x.checked));
+      save(); totals();
+    });
+    ms.appendChild(box);
+  });
+});
+function totals() {
+  const t = { kcal: 0, p: 0, c: 0, f: 0 };
+  N.meals.forEach(cat => {
+    const s = state.meals[cat.id];
+    const idx = cat.multi ? (s || []) : (s == null ? [] : [s]);
+    idx.forEach(i => { const o = cat.options[i]; if (o) { t.kcal += o.kcal; t.p += o.p; t.c += o.c; t.f += o.f; } });
+  });
+  const R = N.range;
+  const cls = (v, [lo, hi], k) => v === 0 ? '' : v < lo ? 'low' : (v > hi && k !== 'p') ? 'high' : 'ok';
+  const g = document.getElementById('totalGrid'); g.innerHTML = '';
+  [['kcal', 'קק"ל'], ['p', 'חלבון'], ['c', 'פחמימה'], ['f', 'שומן']].forEach(([k, l]) =>
+    g.appendChild(el('div', null, el('strong', { class: cls(t[k], R[k], k) }, String(Math.round(t[k]))), l + ' (' + R[k][0] + '–' + R[k][1] + ')')));
+}
+totals();
+
+/* guide */
+const gc = document.getElementById('guideContent');
+P.guide.forEach(sec => {
+  const c = el('div', { class: 'card' });
+  c.appendChild(el('span', { class: 'badge' }, sec.badge));
+  c.appendChild(el('h2', null, sec.title));
+  if (sec.intro) c.appendChild(el('p', { class: 'muted', html: sec.intro }));
+  if (sec.points) c.appendChild(el('div', { class: 'inner' }, el('ul', { class: 'clean' }, sec.points.map(p => el('li', { html: p })))));
+  gc.appendChild(c);
+});
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
